@@ -5,7 +5,6 @@ from task_2_credit_card_fraud_detecation.mlops.mlflow_utils import load_producti
 
 
 
-# Load model once at module import (or lazy load)
 _model = None
 
 def get_model():

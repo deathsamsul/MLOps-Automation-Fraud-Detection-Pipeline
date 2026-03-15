@@ -5,18 +5,20 @@ from contextlib import contextmanager
 
 
 
+
+
 #  configuration
+DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'database', 'fraud_monitor.db')   # store predictions and labels
+CSV_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'predictions.csv')     # store full prediction records for monitoring and drift detection
+TRAIN_DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'fraud_train.csv') # trainign data
+TEST_DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'fraud_test.csv') # testing data
 
-DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'database', 'fraud_monitor.db')
-CSV_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'predictions.csv')
-REFERENCE_DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'reference_data.csv')
-TRAIN_DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'fraud_train.csv')
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")) # project root
+MLFLOW_TRACKING_URI = os.environ.get('MLFLOW_TRACKING_URI', 'file:' + os.path.join(BASE_DIR, 'mlruns')) # local mlflow tracking URI
 
-MLFLOW_TRACKING_URI = "file:./mlruns"
 MODEL_NAME = "fraud_detection_model"
 EXPERIMENT_NAME = "fraud_detection"
 
-# ensure directories exist
 os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 os.makedirs(os.path.dirname(CSV_PATH), exist_ok=True)
 
@@ -44,15 +46,12 @@ def init_db():
 
 
 #CSV helpers 
-
 def init_csv():
-
     if not os.path.exists(CSV_PATH):
-        df = pd.DataFrame(columns=[
-            'transaction_id', 'timestamp', 'fraud_probability', 'prediction','actual_label',
-            'merchant', 'category', 'amt', 'gender', 'city',
-            'state', 'zip', 'lat', 'long', 'city_pop', 'job', 'unix_time',
-            'merch_lat', 'merch_long', 'trans_date_trans_time', 'dob' ])
+
+        df = pd.DataFrame(columns=['transaction_id', 'timestamp', 'fraud_probability', 'prediction','actual_label',
+                                   'merchant', 'category', 'amt', 'gender', 'city','state', 'zip', 'lat', 'long', 'city_pop',
+                                     'job', 'unix_time','merch_lat', 'merch_long', 'trans_date_trans_time', 'dob' ])
         
         df.to_csv(CSV_PATH, index=False)
 
@@ -67,8 +66,9 @@ def update_label_in_csv(transaction_id: str, actual_label: int):
     df = pd.read_csv(CSV_PATH)
     if transaction_id not in df['transaction_id'].values:
         raise ValueError(f"Transaction ID {transaction_id} not found in CSV")
+    
     df.loc[df['transaction_id'] == transaction_id, 'actual_label'] = actual_label
-    df.to_csv(CSV_PATH, index=False)
+    df.to_csv(CSV_PATH,  mode='a', header=not os.path.exists(CSV_PATH), index=False)
 
 
 def load_predictions_from_csv():
@@ -77,8 +77,8 @@ def load_predictions_from_csv():
     return pd.DataFrame()
 
 
-# model constants 
 
+# model constants 
 MODEL_COLUMNS = [
     'merchant', 'category', 'amt', 'gender', 'city', 'state', 'zip', 'lat',
     'long', 'city_pop', 'job', 'unix_time', 'merch_lat', 'merch_long',

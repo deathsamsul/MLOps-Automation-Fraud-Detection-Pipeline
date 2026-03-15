@@ -15,11 +15,12 @@ from task_2_credit_card_fraud_detecation.utils.utility import (init_db, get_db_c
 
 app = FastAPI(title="Fraud Detection API")
 
-# Initialize storage
+# initialize storage
 init_db()
 init_csv()
 
-# Pydantic models
+
+# input data validation 
 class Transaction(BaseModel):
     merchant: str = "fraud_Rippin, Kub and Mann"
     category: str = "misc_net"
@@ -39,69 +40,63 @@ class Transaction(BaseModel):
     dob: str = "1968-03-19"
 
 
+# label update validation
 class LabelUpdate(BaseModel):
     transaction_id: str
     actual_label: int
 
 
 
+# predict endpoint
 @app.post("/predict")
 def predict(transaction: Transaction):
 
-    # Get prediction
+    
     input_dict = transaction.model_dump() 
     pred, prob = predict_fraud(input_dict)
 
 
-    # Generate transaction ID and timestamp
+    # generate transaction ID and timestamp
     transaction_id = str(uuid.uuid4())
     timestamp = datetime.now().isoformat()
 
 
-    # Prepare record for CSV (include all input fields)
-    record = {
-        'transaction_id': transaction_id,
-        'timestamp': timestamp,
-        'fraud_probability': prob,
-        'prediction': pred,
-        'actual_label': None,
-        **input_dict  # merge all transaction fields
-    }
+    # prepare record for CSV (include all input fields)
+    record = {'transaction_id': transaction_id,'timestamp': timestamp,'fraud_probability': prob,'prediction': pred,
+              'actual_label': None, **input_dict            # merge all transaction fields
+              }
 
-    # Store in SQLite (only metadata)
+
+    # store in SQLite (only metadata)
     with get_db_connection() as conn:
-        conn.execute("""
-            INSERT INTO predictions (transaction_id, timestamp, fraud_probability, prediction)
-            VALUES (?, ?, ?, ?)
-        """, (transaction_id, timestamp, prob, pred))
+        conn.execute("""INSERT INTO predictions (transaction_id, timestamp, fraud_probability, prediction) VALUES (?, ?, ?, ?)""",
+                      (transaction_id, timestamp, prob, pred))
         conn.commit()
 
-    # Append to CSV (full record)
+
+    # append to CSV (full record)
     append_prediction_to_csv(record)
 
-    return {
-        "transaction_id": transaction_id,
-        "fraud_probability": prob,
-        "prediction": pred
-    }
+    return {"transaction_id": transaction_id,"fraud_probability": prob,"prediction": pred}
+
+
+
+
 
 
 @app.post("/update_label")
 def update_label(data: LabelUpdate):
     
-    # Update SQLite
+    # update SQLite
     with get_db_connection() as conn:
-        cursor = conn.execute("""
-            UPDATE predictions
-            SET actual_label = ?
-            WHERE transaction_id = ?
-        """, (data.actual_label, data.transaction_id))
+        cursor = conn.execute(""" UPDATE predictions SET actual_label = ? WHERE transaction_id = ? """,
+                               (data.actual_label, data.transaction_id))
         conn.commit()
 
         if cursor.rowcount == 0:
             raise HTTPException(status_code=404, detail="Transaction ID not found in database")
 
-    # Update CSV
+    # update CSV
     try:
         update_label_in_csv(data.transaction_id, data.actual_label)
     except ValueError as e:

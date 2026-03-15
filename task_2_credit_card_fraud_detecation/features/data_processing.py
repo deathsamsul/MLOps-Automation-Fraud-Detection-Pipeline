@@ -28,6 +28,7 @@ def feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
     if 'dob' in df.columns:
         df["dob"] = pd.to_datetime(df["dob"])
 
+
     # Time features
     df["hour"] = df["trans_date_trans_time"].dt.hour
     df["day"] = df["trans_date_trans_time"].dt.day
@@ -50,8 +51,7 @@ def feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
     df["is_weekend"] = df["weekday"].apply(lambda x: 1 if x >= 5 else 0)
 
     # drop raw/unused columns
-    drop_cols = ["Unnamed: 0", "first", "last", "street", "cc_num", "trans_num",
-                 "trans_date_trans_time", "dob"]
+    drop_cols = ["Unnamed: 0", "first", "last", "street", "cc_num", "trans_num","trans_date_trans_time", "dob"]
     
     df = df.drop(columns=[c for c in drop_cols if c in df.columns], errors="ignore")
 

@@ -2,7 +2,7 @@ import mlflow
 import pandas as pd
 from sklearn.metrics import roc_auc_score, f1_score, precision_score, recall_score
 from task_2_credit_card_fraud_detecation.features.data_processing import load_and_preprocess_data
-from task_2_credit_card_fraud_detecation.utils.utility import MODEL_NAME
+from task_2_credit_card_fraud_detecation.utils.utility import MODEL_NAME, TEST_DATA_PATH
 
 
 
@@ -28,10 +28,10 @@ def evaluate_model_version(version: str = "Production"):
 
 
     # Load holdout test set (or separate evaluation data)
-    X_test, y_test = load_and_preprocess_data("data/fraud_test.csv")  # you need this file
+    x_test, y_test = load_and_preprocess_data(TEST_DATA_PATH)  
 
-    preds = model.predict(X_test)
-    pred_proba = model.predict_proba(X_test)[:, 1]
+    preds = model.predict(x_test)
+    pred_proba = model.predict_proba(x_test)[:, 1]
 
     metrics = {
         "roc_auc": roc_auc_score(y_test, pred_proba),

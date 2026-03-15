@@ -9,28 +9,27 @@ from task_2_credit_card_fraud_detecation.utils.utility import CATEGORICAL_COLS, 
 
 
 
-# python -m task_2_credit_card_fraud_detecation.training.train_model
 
+
+# python -m task_2_credit_card_fraud_detecation.training.train_model
 
 mlflow.set_experiment(EXPERIMENT_NAME)
 
 def train():
+    # load and preprocess data
+    x, y = load_and_preprocess_data(TRAIN_DATA_PATH)
 
-    # Load and preprocess data
-    X, y = load_and_preprocess_data(TRAIN_DATA_PATH)
-
-    # Train/test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42, stratify=y
+    # train/test split
+    x_train, x_test, y_train, y_test = train_test_split(
+        x, y, test_size=0.2, random_state=42, stratify=y
     )
 
 
     with mlflow.start_run() as run:
-        # Log parameters
 
         params = {
-            "iterations": 2000,
-            "learning_rate": 0.005,
+            "iterations": 1000,
+            "learning_rate": 0.05,
             "depth": 6,
             "loss_function": "Logloss",
             "eval_metric": "AUC",
@@ -39,24 +38,19 @@ def train():
 
         mlflow.log_params(params)
 
-        # Train model with categorical features
+        # train model with categorical features
         model = CatBoostClassifier(**params, verbose=0)
-        model.fit( X_train, y_train,cat_features=CATEGORICAL_COLS,  # critical!
-                  eval_set=(X_test, y_test),use_best_model=True,verbose_eval=False
-                  )
+        model.fit( x_train, y_train,cat_features=CATEGORICAL_COLS,eval_set=(x_test, y_test),use_best_model=True,
+                  verbose_eval=False )
 
 
-        # Evaluate
-        pred_proba = model.predict_proba(X_test)[:, 1]
+        # evaluate
+        pred_proba = model.predict_proba(x_test)[:, 1]
         roc_auc = roc_auc_score(y_test, pred_proba)
         mlflow.log_metric("roc_auc", roc_auc)
 
         # Log model to MLflow registry
-        mlflow.catboost.log_model(
-            model,
-            "model",
-            registered_model_name="fraud_detection_model"
-            )
+        mlflow.catboost.log_model(model,"model",registered_model_name="fraud_detection_model")
 
         print(f"Run ID: {run.info.run_id}, ROC-AUC: {roc_auc:.4f}")
         return run.info.run_id

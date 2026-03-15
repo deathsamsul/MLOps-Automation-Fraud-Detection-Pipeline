@@ -9,7 +9,7 @@ from task_2_credit_card_fraud_detecation.pipelines.retrain_pipeline import run_r
 default_args = {
     "owner": "mlops",
     "depends_on_past": False,
-    "start_date": datetime(2024, 1, 1),
+    "start_date": datetime(2026, 1, 1),
     "email_on_failure": True,
     "email_on_retry": False,
     "retries": 1,

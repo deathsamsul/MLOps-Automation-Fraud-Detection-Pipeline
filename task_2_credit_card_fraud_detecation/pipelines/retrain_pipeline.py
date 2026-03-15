@@ -9,20 +9,17 @@ import logging
 
 
 # task_2_credit_card_fraud_detecation/pipelines/retrain_pipeline.py
+# python -m task_2_credit_card_fraud_detecation.pipelines.retrain_pipeline
 
-
+# this like a print statement to show the step messages in logs 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def run_retraining_pipeline(force=False):
-    """
-    Full retraining pipeline:
-    1. Check performance or drift (skip if force=True)
-    2. Train new model
-    3. Evaluate and compare with current production
-    4. If better, promote to production
-    """
 
+
+
+def run_retraining_pipeline(force=False):
+   
     if not force:
         perf_drop = check_performance_drop()
         drift = run_drift_detection()
@@ -33,10 +30,10 @@ def run_retraining_pipeline(force=False):
     logger.info("Starting retraining pipeline...")
 
 
-    # Train new model
+    # train new model
     new_run_id = train()
 
-    # Load current production model's metrics for comparison
+    # load current production model's metrics for comparison
     client = mlflow.MlflowClient()
 
     try:

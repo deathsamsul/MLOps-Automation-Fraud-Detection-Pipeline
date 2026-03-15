@@ -1,7 +1,14 @@
 import sys
 import os
 
-# Add project root to Python path
+
+
+
+# streamlit run task_2_credit_card_fraud_detecation/monitoring/monitoring_dashboard.py
+
+
+
+# add project root to Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 
 import streamlit as st
@@ -14,9 +21,6 @@ from task_2_credit_card_fraud_detecation.utils.utility import load_predictions_f
 
 
 
-
-# Run command
-# streamlit run task_2_credit_card_fraud_detecation/monitoring/monitoring_dashboard.py
 
 
 st.set_page_config(page_title="Fraud Monitoring", layout="wide")
@@ -83,21 +87,15 @@ if not df.empty:
     # table of recent predictions
     st.subheader(" Recent Predictions & Label Updates")
 
-    st.dataframe(df.tail(10)
-        #df[ ["transaction_id","timestamp","fraud_probability","prediction","actual_label" ]].tail(100)
-        )
+    st.dataframe(df[ ["transaction_id","timestamp","fraud_probability","prediction","actual_label" ]].tail(100))
 
 
     # update true label form 
-
     st.subheader(" Update True Label")
 
     with st.form("label_update"):
-
         txn_id = st.text_input("Transaction ID")
-
         true_label = st.selectbox("Actual Label",[0, 1])
-
         submitted = st.form_submit_button("Update")
 
         if submitted:
@@ -107,24 +105,19 @@ if not df.empty:
 
             else:
                 try:
-
                     response = requests.post("http://127.0.0.1:8000/update_label",json={"transaction_id": txn_id,
                                                                                         "actual_label": true_label})
 
                     if response.status_code == 200:
                         st.success(f" Label for {txn_id} updated to {true_label}")
-
                         # reload dashboard
                         st.rerun()
 
                     else:
-
                         st.error(response.json()["detail"])
 
                 except Exception as e:
-
                     st.error(f"API Connection Error: {e}")
 
 else:
-
     st.info("No predictions in CSV yet.")
