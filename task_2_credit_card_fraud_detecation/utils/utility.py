@@ -62,17 +62,7 @@ def append_prediction_to_csv(record: dict):
     df.to_csv(CSV_PATH, mode='a', header=not os.path.exists(CSV_PATH), index=False)
 
 
-# def update_label_in_csv(transaction_id: str, actual_label: int):
-#     # Read CSV, force actual_label as object to preserve None/NaN and ints
-#     df = pd.read_csv(CSV_PATH, dtype={'actual_label': 'object'})
-#     # Ensure transaction_id is string and strip spaces
-#     df['transaction_id'] = df['transaction_id'].astype(str).str.strip()
-#     transaction_id = transaction_id.strip()
-#     mask = df['transaction_id'] == transaction_id
-#     if not mask.any():
-#         raise ValueError(f"Transaction ID {transaction_id} not found in CSV")
-#     df.loc[mask, 'actual_label'] = actual_label
-#     df.to_csv(CSV_PATH, index=False)
+
 
 def update_label_in_csv(transaction_id: str, actual_label: int):
     df = pd.read_csv(CSV_PATH)

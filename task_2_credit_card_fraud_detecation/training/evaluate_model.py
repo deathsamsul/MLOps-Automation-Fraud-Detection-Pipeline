@@ -7,7 +7,6 @@ from task_2_credit_card_fraud_detecation.utils.utility import MODEL_NAME, TEST_D
 
 
 
-
 def evaluate_model_version(version: str = "Production"):
 
     client = mlflow.MlflowClient()

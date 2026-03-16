@@ -113,32 +113,3 @@ def test_update_label_in_csv():
     updated_label = df_after.loc[df_after['transaction_id'] == 'txn789', 'actual_label'].iloc[0]
     assert updated_label == 1, f"Expected 1, got {updated_label} (type: {type(updated_label)})"
 
-# def test_update_label_in_csv():
-#     util.init_csv()
-#     record = {
-#         'transaction_id': 'txn789',
-#         'timestamp': '2023-01-01T12:00:00',
-#         'fraud_probability': 0.2,
-#         'prediction': 0,
-#         'actual_label': None,
-#         'merchant': 'Test',
-#         'category': 'test',
-#         'amt': 10.0,
-#         'gender': 'F',
-#         'city': 'TestCity',
-#         'state': 'TS',
-#         'zip': 12345,
-#         'lat': 0.0,
-#         'long': 0.0,
-#         'city_pop': 1000,
-#         'job': 'Tester',
-#         'unix_time': 123456789,
-#         'merch_lat': 1.0,
-#         'merch_long': 1.0,
-#         'trans_date_trans_time': '2023-01-01 12:00:00',
-#         'dob': '2000-01-01'
-#     }
-#     util.append_prediction_to_csv(record)
-#     util.update_label_in_csv('txn789', 1)
-#     df = util.load_predictions_from_csv()
-#     assert df.loc[df['transaction_id'] == 'txn789', 'actual_label'].iloc[0] == 1

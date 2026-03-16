@@ -9,7 +9,6 @@ from task_2_credit_card_fraud_detecation.inference.predictor import predict_frau
 
 
 class DummyModel:
-    """A dummy classifier that mimics CatBoost's predict/predict_proba"""
     def predict(self, X):
         # Return 1 for all rows
         return np.array([1] * len(X))
