@@ -1,5 +1,5 @@
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator  
 from datetime import datetime, timedelta
 from task_2_credit_card_fraud_detecation.pipelines.retrain_pipeline import run_retraining_pipeline
 

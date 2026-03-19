@@ -16,5 +16,6 @@ setup(
         "evidently",
         "plotly",
         "requests",
+        'pytest'
     ],
 )
