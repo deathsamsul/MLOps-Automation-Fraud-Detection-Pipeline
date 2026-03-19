@@ -7,15 +7,13 @@ __pycache__/
 # Virtual environment
 
 fraudenv/
-
+pyenv311/
 
 # mlflow experiment
 mlruns/
 
 
 task_2_credit_card_fraud_detecation/model/
-# fine-tuned model directory
-deberta_movie_genre_model_gpu_v1
 
 # Data files
 *.csv
