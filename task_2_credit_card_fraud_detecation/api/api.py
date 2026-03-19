@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import pandas as pd
 import uuid
 from datetime import datetime
@@ -43,7 +43,7 @@ class Transaction(BaseModel):
 # label update validation
 class LabelUpdate(BaseModel):
     transaction_id: str
-    actual_label: int
+    actual_label: int= Field(..., ge=0, le=1, description="Actual label must be 0 (legit) or 1 (fraud)")
 
 
 
