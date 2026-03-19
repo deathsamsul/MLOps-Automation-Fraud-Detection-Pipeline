@@ -15,8 +15,10 @@ from task_2_credit_card_fraud_detecation.utils.utility import CATEGORICAL_COLS, 
 
 mlflow.set_experiment(EXPERIMENT_NAME)
 
+
+# now for baseline model training we use just old training data 
+# (old+new data) improve later
 def train():
-    # load and preprocess data
     x, y = load_and_preprocess_data(TRAIN_DATA_PATH)
 
     # train/test split
@@ -27,14 +29,8 @@ def train():
 
     with mlflow.start_run() as run:
 
-        params = {
-            "iterations": 1000,
-            "learning_rate": 0.05,
-            "depth": 6,
-            "loss_function": "Logloss",
-            "eval_metric": "AUC",
-            "random_seed": 42
-        }
+        params = {"iterations": 1000,"learning_rate": 0.05,"depth": 6,"loss_function": "Logloss", "eval_metric": "AUC",
+                   "random_seed": 42}
 
         mlflow.log_params(params)
 

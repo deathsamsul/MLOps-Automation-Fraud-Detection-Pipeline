@@ -115,7 +115,7 @@ def monitoring_pipeline():  #        False - system healthy / no retraining need
         print("System healthy")
         return False
     
-
+# for testing the monitoring pipeline independently
 if __name__ == "__main__":
     result = monitoring_pipeline()
     print("Monitoring pipeline result:", result)

@@ -19,8 +19,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-
-
 def run_retraining_pipeline(force=False):
    
     if not force:
@@ -34,7 +32,7 @@ def run_retraining_pipeline(force=False):
 
 
     # train new model
-    new_run_id = train()
+    new_run_id = train() # train return new traind run id
 
     # load current production model's metrics for comparison
     client = mlflow.MlflowClient()
