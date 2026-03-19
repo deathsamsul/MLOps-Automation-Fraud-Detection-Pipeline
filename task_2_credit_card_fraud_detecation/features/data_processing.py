@@ -59,3 +59,11 @@ def feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
     df = df[MODEL_COLUMNS]
     
     return df
+
+def try_prepare_features_for_shap(raw_df: pd.DataFrame):
+      
+    try:
+        prepared = feature_engineering(raw_df.copy())
+        return prepared, None
+    except Exception as e:
+        return None, e

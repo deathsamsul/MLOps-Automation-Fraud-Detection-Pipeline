@@ -6,6 +6,14 @@ from contextlib import contextmanager
 
 
 
+MODEL_COLUMNS = [
+    'merchant', 'category', 'amt', 'gender', 'city', 'state', 'zip', 'lat',
+    'long', 'city_pop', 'job', 'unix_time', 'merch_lat', 'merch_long',
+    'hour', 'day', 'month', 'weekday', 'age', 'distance', 'amt_log',
+    'is_night', 'is_weekend'
+]
+
+CATEGORICAL_COLS = ['merchant', 'category', 'gender', 'city', 'state', 'job']
 
 #  configuration
 DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'database', 'fraud_monitor.db')   # store predictions and labels
@@ -80,12 +88,3 @@ def load_predictions_from_csv():
 
 
 
-# model constants 
-MODEL_COLUMNS = [
-    'merchant', 'category', 'amt', 'gender', 'city', 'state', 'zip', 'lat',
-    'long', 'city_pop', 'job', 'unix_time', 'merch_lat', 'merch_long',
-    'hour', 'day', 'month', 'weekday', 'age', 'distance', 'amt_log',
-    'is_night', 'is_weekend'
-]
-
-CATEGORICAL_COLS = ['merchant', 'category', 'gender', 'city', 'state', 'job']
