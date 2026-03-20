@@ -1,4 +1,3 @@
-from asyncio.log import logger
 import sqlite3
 import pandas as pd
 from evidently import Report
@@ -9,13 +8,17 @@ import json
 import os
 import logging
 from sklearn.metrics import f1_score
+import warnings
+
 
 
 
 mlflow.set_tracking_uri("sqlite:///mlflow.db")
 mlflow.set_experiment("fraud_monitoring")  
 
+warnings.filterwarnings("ignore")
 
+logger = logging.getLogger(__name__)
 
 def check_performance_drop(threshold_f1=0.80, use_csv=False):
 
@@ -63,7 +66,8 @@ def run_drift_detection(reference_path=TRAIN_DATA_PATH, current_path=CSV_PATH,dr
                     'city_pop', 'job', 'unix_time','merch_lat', 'merch_long', 'trans_date_trans_time', 'dob']
     
     try:
-        reference1 = pd.read_csv(reference_path).sample((min(len(reference_path), 5000)))
+        referenc = pd.read_csv(reference_path)
+        reference1=referenc.sample(min(len(reference1),5000))
         current1 = pd.read_csv(current_path)
         if reference1.empty:
                 print("Reference data is empty. Skipping drift detection.")
@@ -80,7 +84,7 @@ def run_drift_detection(reference_path=TRAIN_DATA_PATH, current_path=CSV_PATH,dr
         report.run(reference_data=reference, current_data=current)
 
 
-        drift_summary = json.loads(report.json())     # converts JSON string → python dictionary
+        drift_summary = report.as_dict()    # converts JSON string → python dictionary
         metric_data = drift_summary["metrics"][0]["value"]
         n_drifted = metric_data["count"]   # number of columns with detected drift 
         drift_ratio = metric_data["share"] # ratio of columns with detected drift out of total columns analyzed
