@@ -3,7 +3,7 @@ import mlflow.catboost
 from task_2_credit_card_fraud_detecation.utils.utility import MODEL_NAME
 
 
-
+mlflow.set_tracking_uri("sqlite:///mlflow.db")
 
 #load form model registry
 def load_production_model():
@@ -23,7 +23,11 @@ def load_production_model():
         raise
 
 
-def log_model_to_registry(model, run_id, metrics, model_name=MODEL_NAME):
-    with mlflow.start_run(run_id=run_id):
-        mlflow.catboost.log_model(model, "model", registered_model_name=model_name)
-        mlflow.log_metrics(metrics)
+
+
+def register_candidate_model(candidate_run_id):
+    
+    model_uri = f"runs:/{candidate_run_id}/model"
+    result = mlflow.register_model( model_uri=model_uri, name=MODEL_NAME)
+
+    return { "model_name": MODEL_NAME,"version": result.version,"run_id": candidate_run_id,}

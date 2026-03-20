@@ -1,3 +1,4 @@
+from asyncio.log import logger
 import sqlite3
 import pandas as pd
 from evidently import Report
@@ -6,6 +7,7 @@ import mlflow
 from task_2_credit_card_fraud_detecation.utils.utility import  TRAIN_DATA_PATH,DB_PATH, CSV_PATH
 import json
 import os
+import logging
 from sklearn.metrics import f1_score
 
 
@@ -61,7 +63,7 @@ def run_drift_detection(reference_path=TRAIN_DATA_PATH, current_path=CSV_PATH,dr
                     'city_pop', 'job', 'unix_time','merch_lat', 'merch_long', 'trans_date_trans_time', 'dob']
     
     try:
-        reference1 = pd.read_csv(reference_path).sample(5000)
+        reference1 = pd.read_csv(reference_path).sample((min(len(reference_path), 5000)))
         current1 = pd.read_csv(current_path)
         if reference1.empty:
                 print("Reference data is empty. Skipping drift detection.")
@@ -75,10 +77,10 @@ def run_drift_detection(reference_path=TRAIN_DATA_PATH, current_path=CSV_PATH,dr
         current = current1[feature_cols]
 
         report = Report(metrics=[DataDriftPreset()])
-        result = report.run(reference_data=reference, current_data=current)
+        report.run(reference_data=reference, current_data=current)
 
 
-        drift_summary = json.loads(result.json())     #Converts JSON string → Python dictionary
+        drift_summary = json.loads(report.json())     # converts JSON string → python dictionary
         metric_data = drift_summary["metrics"][0]["value"]
         n_drifted = metric_data["count"]   # number of columns with detected drift 
         drift_ratio = metric_data["share"] # ratio of columns with detected drift out of total columns analyzed
@@ -88,7 +90,7 @@ def run_drift_detection(reference_path=TRAIN_DATA_PATH, current_path=CSV_PATH,dr
         print(f"Drift detected in {n_drifted}/{total} columns ({drift_ratio:.2%})")
 
         report_path = os.path.join(os.path.dirname(__file__), "drift_report.html")
-        result.save_html(report_path)
+        report.save_html(report_path)
 
         
         with mlflow.start_run(run_name="drift_check"):
@@ -103,7 +105,7 @@ def run_drift_detection(reference_path=TRAIN_DATA_PATH, current_path=CSV_PATH,dr
         return False     
 
 
-def monitoring_pipeline():  #        False - system healthy / no retraining needed
+def run_monitoring_pipeline():  #        False - system healthy / no retraining needed
 
     performance_drop = check_performance_drop()
     data_drift = run_drift_detection()
@@ -112,10 +114,12 @@ def monitoring_pipeline():  #        False - system healthy / no retraining need
         print(" Trigger retraining pipeline")
         return True
     else:
-        print("System healthy")
+        # print("System healthy")
+        logger = logging.getLogger(__name__)
+        logger.info("System healthy")
         return False
     
 # for testing the monitoring pipeline independently
 if __name__ == "__main__":
-    result = monitoring_pipeline()
+    result = run_monitoring_pipeline()
     print("Monitoring pipeline result:", result)
