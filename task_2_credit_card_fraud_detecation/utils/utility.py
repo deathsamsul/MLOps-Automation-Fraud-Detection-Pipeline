@@ -6,6 +6,12 @@ from contextlib import contextmanager
 
 
 
+
+
+MLFLOW_TRACKING_URI = "sqlite:///mlflow.db"
+
+
+
 MODEL_COLUMNS = [
     'merchant', 'category', 'amt', 'gender', 'city', 'state', 'zip', 'lat',
     'long', 'city_pop', 'job', 'unix_time', 'merch_lat', 'merch_long',
