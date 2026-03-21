@@ -8,6 +8,8 @@ __pycache__/
 
 fraudenv/
 pyenv311/
+ml_env/
+airflow_env/
 
 # mlflow experiment
 mlruns/

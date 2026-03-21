@@ -22,5 +22,5 @@ def run_retraining_pipeline():
 
 
 if __name__ == "__main__":
-    result = run_retraining_pipeline(force=True)
+    result = run_retraining_pipeline()
     print(result)
