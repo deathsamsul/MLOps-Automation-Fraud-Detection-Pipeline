@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from airflow import DAG
-from airflow.operators.bash import BashOperator
+from airflow.providers.standard.operators.bash import BashOperator
+
+
 
 default_args = {
     "owner": "automated_mlops",
@@ -9,10 +11,20 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 
+
+#python -m task_2_credit_card_fraud_detecation.airflow_dags.retrain_dag
+# export AIRFLOW__CORE__DAGS_FOLDER=/mnt/c/Users/samsu/Desktop/code/fraud_detection/task_2_credit_card_fraud_detecation/airflow_dags
+# task_2_credit_card_fraud_detecation/airflow_dags/retrain_dag.py
+
+# source /mnt/c/Users/samsu/Desktop/code/fraud_detection/ml_env/bin/activate
+# python -m task_2_credit_card_fraud_detecation.airflow_dags.bash_operator_scripts.monitor
+
 ML_ENV = "/mnt/c/Users/samsu/Desktop/code/fraud_detection/ml_env/bin/activate"
 PROJECT_DIR = "/mnt/c/Users/samsu/Desktop/code/fraud_detection"
 
 SCRIPTS_DIR = f"{PROJECT_DIR}/task_2_credit_card_fraud_detecation/airflow_dags/bash_operator_scripts"
+
+
 
 with DAG(
     dag_id="fraud_retrain_4step_pipeline",
