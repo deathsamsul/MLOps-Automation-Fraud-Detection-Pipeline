@@ -3,7 +3,10 @@ from task_2_credit_card_fraud_detecation.pipelines.retrain_pipeline import run_r
 
 
 
-# task_2_credit_card_fraud_detecation/airflow_dags/bash_operator_scripts/
+# task_2_credit_card_fraud_detecation/bash_operator_scripts/
+# python -m task_2_credit_card_fraud_detecation.bash_operator_scripts.retrain
+#
+
 def main():
     result = run_retraining_pipeline()
 
