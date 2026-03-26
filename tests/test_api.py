@@ -6,6 +6,11 @@ from task_2_credit_card_fraud_detecation.api.api import app
 
 
 
+
+
+# python -m pytest tests/
+
+
 client = TestClient(app)
 
 def test_predict_endpoint():
