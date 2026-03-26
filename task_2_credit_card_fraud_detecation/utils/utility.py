@@ -6,11 +6,6 @@ from contextlib import contextmanager
 
 
 
-
-
-
-
-
 MODEL_COLUMNS = [
     'merchant', 'category', 'amt', 'gender', 'city', 'state', 'zip', 'lat',
     'long', 'city_pop', 'job', 'unix_time', 'merch_lat', 'merch_long',
@@ -20,10 +15,12 @@ MODEL_COLUMNS = [
 
 CATEGORICAL_COLS = ['merchant', 'category', 'gender', 'city', 'state', 'job']
 
-# Docker-friendly base paths
-DATA_DIR = os.environ.get("DATA_DIR", "/app/data")
-DB_DIR = os.environ.get("DB_DIR", "/app/database")
-MLFLOW_DIR = os.environ.get("MLFLOW_DIR", "/app/mlruns")
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+# Safe local defaults
+DATA_DIR = os.environ.get("DATA_DIR", os.path.join(BASE_DIR, "data"))
+DB_DIR = os.environ.get("DB_DIR", os.path.join(BASE_DIR, "database"))
+MLFLOW_DIR = os.environ.get("MLFLOW_DIR", os.path.join(BASE_DIR, "mlruns"))
 
 DB_PATH = os.environ.get("DB_PATH", os.path.join(DB_DIR, "fraud_monitor.db"))
 CSV_PATH = os.environ.get("CSV_PATH", os.path.join(DATA_DIR, "predictions.csv"))
@@ -35,9 +32,11 @@ MLFLOW_TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI", f"file:{MLFLOW_DIR}"
 MODEL_NAME = "fraud_detection_model"
 EXPERIMENT_NAME = "fraud_detection"
 
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-os.makedirs(os.path.dirname(CSV_PATH), exist_ok=True)
+os.makedirs(DB_DIR, exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(MLFLOW_DIR, exist_ok=True)
+
+
 
 @contextmanager
 def get_db_connection():
