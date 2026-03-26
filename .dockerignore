@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+.git/
+.github/
+.gitignore
+.venv/
+ml_env/
+airflow_env/
+.env
+.airflow/
+pytest_cache/
+.ipynb_checkpoints/

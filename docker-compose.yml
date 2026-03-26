@@ -1,0 +1,130 @@
+version: "3.9"
+
+services:
+  fraud-api:
+    build:
+      context: .
+      dockerfile: docker/fraud-api/Dockerfile
+    container_name: fraud-api
+    ports:
+      - "8000:8000"
+    environment:
+      PYTHONPATH: /app
+      DATA_DIR: /app/data
+      DB_DIR: /app/database
+      MLFLOW_DIR: /app/mlruns
+      DB_PATH: /app/database/fraud_monitor.db
+      CSV_PATH: /app/data/predictions.csv
+      TRAIN_DATA_PATH: /app/data/fraud_train.csv
+      TEST_DATA_PATH: /app/data/fraud_test.csv
+      MLFLOW_TRACKING_URI: file:/app/mlruns
+    volumes:
+      - ./data:/app/data
+      - ./database:/app/database
+      - ./mlruns:/app/mlruns
+    restart: unless-stopped
+
+  fraud-dashboard:
+    build:
+      context: .
+      dockerfile: docker/fraud-dashboard/Dockerfile
+    container_name: fraud-dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      PYTHONPATH: /app
+      DATA_DIR: /app/data
+      DB_DIR: /app/database
+      MLFLOW_DIR: /app/mlruns
+      DB_PATH: /app/database/fraud_monitor.db
+      CSV_PATH: /app/data/predictions.csv
+      TRAIN_DATA_PATH: /app/data/fraud_train.csv
+      TEST_DATA_PATH: /app/data/fraud_test.csv
+      MLFLOW_TRACKING_URI: file:/app/mlruns
+    volumes:
+      - ./data:/app/data
+      - ./database:/app/database
+      - ./mlruns:/app/mlruns
+    depends_on:
+      - fraud-api
+    restart: unless-stopped
+
+  fraud-trainer:
+    build:
+      context: .
+      dockerfile: docker/fraud-trainer/Dockerfile
+    container_name: fraud-trainer
+    environment:
+      PYTHONPATH: /app
+      DATA_DIR: /app/data
+      DB_DIR: /app/database
+      MLFLOW_DIR: /app/mlruns
+      DB_PATH: /app/database/fraud_monitor.db
+      CSV_PATH: /app/data/predictions.csv
+      TRAIN_DATA_PATH: /app/data/fraud_train.csv
+      TEST_DATA_PATH: /app/data/fraud_test.csv
+      MLFLOW_TRACKING_URI: file:/app/mlruns
+    volumes:
+      - ./data:/app/data
+      - ./database:/app/database
+      - ./mlruns:/app/mlruns
+    profiles:
+      - trainer
+
+  airflow-webserver:
+    build:
+      context: .
+      dockerfile: docker/fraud-airflow/Dockerfile
+    container_name: airflow-webserver
+    ports:
+      - "8080:8080"
+    environment:
+      AIRFLOW_COMPONENT: webserver
+      PYTHONPATH: /opt/airflow
+      DATA_DIR: /opt/airflow/data
+      DB_DIR: /opt/airflow/database
+      MLFLOW_DIR: /opt/airflow/mlruns
+      DB_PATH: /opt/airflow/database/fraud_monitor.db
+      CSV_PATH: /opt/airflow/data/predictions.csv
+      TRAIN_DATA_PATH: /opt/airflow/data/fraud_train.csv
+      TEST_DATA_PATH: /opt/airflow/data/fraud_test.csv
+      MLFLOW_TRACKING_URI: file:/opt/airflow/mlruns
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/task_2_credit_card_fraud_detecation/airflow_dags
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
+    volumes:
+      - ./data:/opt/airflow/data
+      - ./database:/opt/airflow/database
+      - ./mlruns:/opt/airflow/mlruns
+      - ./logs:/opt/airflow/logs
+    command: ["/entrypoint.sh"]
+    restart: unless-stopped
+
+  airflow-scheduler:
+    build:
+      context: .
+      dockerfile: docker/fraud-airflow/Dockerfile
+    container_name: airflow-scheduler
+    environment:
+      AIRFLOW_COMPONENT: scheduler
+      PYTHONPATH: /opt/airflow
+      DATA_DIR: /opt/airflow/data
+      DB_DIR: /opt/airflow/database
+      MLFLOW_DIR: /opt/airflow/mlruns
+      DB_PATH: /opt/airflow/database/fraud_monitor.db
+      CSV_PATH: /opt/airflow/data/predictions.csv
+      TRAIN_DATA_PATH: /opt/airflow/data/fraud_train.csv
+      TEST_DATA_PATH: /opt/airflow/data/fraud_test.csv
+      MLFLOW_TRACKING_URI: file:/opt/airflow/mlruns
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/task_2_credit_card_fraud_detecation/airflow_dags
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
+    volumes:
+      - ./data:/opt/airflow/data
+      - ./database:/opt/airflow/database
+      - ./mlruns:/opt/airflow/mlruns
+      - ./logs:/opt/airflow/logs
+    command: ["/entrypoint.sh"]
+    depends_on:
+      - airflow-webserver
+    restart: unless-stopped
