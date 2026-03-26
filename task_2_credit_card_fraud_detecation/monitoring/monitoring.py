@@ -3,7 +3,7 @@ import pandas as pd
 from evidently import Report
 from evidently.presets import DataDriftPreset
 import mlflow
-from task_2_credit_card_fraud_detecation.utils.utility import  TRAIN_DATA_PATH,DB_PATH, CSV_PATH
+from task_2_credit_card_fraud_detecation.utils.utility import  TRAIN_DATA_PATH,DB_PATH, CSV_PATH,MLFLOW_TRACKING_URI
 import json
 import os
 import logging
@@ -13,7 +13,7 @@ import warnings
 
 
 
-mlflow.set_tracking_uri("sqlite:///mlflow.db")
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 mlflow.set_experiment("fraud_monitoring")  
 
 warnings.filterwarnings("ignore")

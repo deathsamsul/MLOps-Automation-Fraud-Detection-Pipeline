@@ -1,12 +1,12 @@
 import mlflow
 from sklearn.metrics import roc_auc_score, f1_score, precision_score, recall_score
 from task_2_credit_card_fraud_detecation.features.data_processing import load_and_preprocess_data
-from task_2_credit_card_fraud_detecation.utils.utility import MODEL_NAME, TEST_DATA_PATH
+from task_2_credit_card_fraud_detecation.utils.utility import MODEL_NAME, TEST_DATA_PATH,MLFLOW_TRACKING_URI
 
 
 
 
-mlflow.set_tracking_uri("sqlite:///mlflow.db")
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
 def calculate_metrics(model, x_test, y_test):
     

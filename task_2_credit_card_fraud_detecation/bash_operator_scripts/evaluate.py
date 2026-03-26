@@ -2,7 +2,7 @@ import json
 import sys
 from task_2_credit_card_fraud_detecation.training.evaluate_model import evaluate_candidate_model
 
-
+# python -m task_2_credit_card_fraud_detecation.bash_operator_scripts.evaluate 93c4afbcce784984ae9ec98fa627be90
 
 def main(run_id):
 

@@ -1,9 +1,9 @@
 import mlflow
 import mlflow.catboost
-from task_2_credit_card_fraud_detecation.utils.utility import MODEL_NAME
+from task_2_credit_card_fraud_detecation.utils.utility import MODEL_NAME, MLFLOW_TRACKING_URI
 
 
-mlflow.set_tracking_uri("sqlite:///mlflow.db")
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
 #load form model registry
 def load_production_model():
